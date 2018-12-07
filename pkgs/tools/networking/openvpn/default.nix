@@ -18,16 +18,11 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ lzo openssl ]
+  buildInputs = [ lzo openssl pkcs11helper ]
                   ++ optionals stdenv.isLinux [ pam iproute ]
-                  ++ optional useSystemd systemd
-                  ++ optional pkcs11Support pkcs11helper;
+                  ++ optional useSystemd systemd;
 
-  configureFlags = optionals stdenv.isLinux [
-    "--enable-iproute2"
-    "IPROUTE=${iproute}/sbin/ip" ]
-    ++ optional useSystemd "--enable-systemd"
-    ++ optional pkcs11Support "--enable-pkcs11"
+  configureFlags = optionals stdenv.isLinux [ "--enable-iproute2" "IPROUTE=${iproute}/sbin/ip" "--enable-pkcs11" ]
     ++ optional stdenv.isDarwin "--disable-plugin-auth-pam";
 
   postInstall = ''
